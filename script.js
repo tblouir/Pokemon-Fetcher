@@ -28,10 +28,7 @@ async function getPokemon(obj) {
       fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonID}/`)
       .then((res) => res.json())
       .then((obj) => {
-        const pokemonName = obj.name[0].toUpperCase() + obj.name.substring(1)
-        const pokemonImage = obj.sprites.front_default
-
-        pokemonArray.push([pokemonID, pokemonName, pokemonImage])
+        pokemonArray.push(obj)
       })
     } catch (error) {
       console.log(`Error Caught: ${error}`)
@@ -57,7 +54,7 @@ async function preparePokemon() {
 function sortPokemon(arr) {
   console.log('Sorting');
   arr.sort((a, b) => {
-    return a[0] - b[0]
+    return a.order - b.order
   })
 }
 
@@ -78,12 +75,12 @@ function waitForResults() {
 }
 
 function displayPokemon(arr) {
-  arr.forEach((pokemonArray) => {
+  arr.forEach((pokemon) => {
     const div = document.createElement('div')
     const image = document.createElement('img')
-    const imageURL = pokemonArray[2]
+    const imageURL = pokemon.sprites.front_default
   
-    div.textContent = pokemonArray[1][0].toUpperCase() + pokemonArray[1].substring(1)
+    div.textContent = pokemon.name[0].toUpperCase() + pokemon.name.substring(1)
     image.src = imageURL
   
     container.appendChild(div)
