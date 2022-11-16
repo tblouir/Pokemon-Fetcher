@@ -2,6 +2,8 @@ const container = document.querySelector('.main-container')
 const search = document.getElementById('search')
 const generationSelector = document.getElementById('generation')
 const regex = /\d+/g
+// Add caching instead of just clearing array in step 3
+// Maybe add lazy loading for images on scroll down
 let pokemonArray = []
 let pokemonFetchLength = 0
 let flipper = 0
@@ -22,7 +24,7 @@ async function getGeneration() {
 
 //Step 2
 async function getPokemon(obj) {
-  console.log(obj);
+  // console.log(obj);
   obj.pokemon_species.forEach((pokemon) => {
     let pokemonID = pokemon.url.slice(41).match(regex)[0]
 
@@ -58,7 +60,7 @@ async function preparePokemon() {
 function sortPokemon(arr) {
   console.log('Sorting');
   arr.sort((a, b) => {
-    return a.order - b.order
+    return a.id - b.id
   })
 }
 
@@ -71,9 +73,10 @@ function waitForResults() {
         throw `Request timed out after ${flipper} tries.`
       }
       console.log(`Flipper: ${flipper}`);
-      timeout = setTimeout(waitForResults, 250);
+      timeout = setTimeout(waitForResults, 1000);
       return false
     } else {
+      flipper = 0
       sortPokemon(pokemonArray)
       displayPokemon(pokemonArray)
       clearTimeout(timeout)
