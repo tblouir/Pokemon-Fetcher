@@ -24,7 +24,43 @@ body {
   margin-top: 3rem;
 }
 
+#generation {
+  padding: 1rem;
+}
+
 .pokemon {
+  text-align: center;
+  justify-self: center;
+}
+
+.pokemon img {
+  animation: 1s linear infinite alternate bounce;
+}
+
+@keyframes bounce {
+  0% {
+    translate: 0;
+  }
+  50% {
+    translate: 0 4%;
+  }
+  100% {
+    translate: 0 -4%;
+  }
+}
+
+.pokemon div:first-child {
+  width: fit-content;
+}
+
+.pokemon div:first-child:hover {
+  color: white;
+  background-color: lightgray;
+}
+
+.pokemon a {
+  color: black;
+  text-decoration: none;
   text-align: center;
 }
 
@@ -36,7 +72,7 @@ body {
 
 .footer {
   background-color: black;
-  color: white;
+  color: rgba(255, 255, 255, alpha);
   text-align: center;
   overflow: hidden;
   margin-top: 5rem;
@@ -48,4 +84,22 @@ body {
 
 .empty {
   width: var(--header-widths);
+}
+
+.hidden {
+  display: none;
+}
+
+[data-pokemon-container] {
+  text-align: center;
+}
+
+[data-pokemon-url] {
+  color: black;
+  font-size: 2rem;
+  text-decoration: none;
+}
+
+[data-pokemon-url]:hover {
+  color: white
 }
