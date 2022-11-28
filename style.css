@@ -5,6 +5,7 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
@@ -90,6 +91,32 @@ body {
 
 .hidden {
   display: none;
+}
+
+#loading {
+  grid-column: 2 / 3;
+  width: 5rem;
+  height: 5rem;
+  border: 0.5rem solid;
+  border-color: black transparent transparent transparent;
+  border-radius: 50%;
+  justify-self: center;
+  animation: 1.5s linear 0s infinite running rotate;
+}
+
+@keyframes rotate {
+  0% {
+    rotate: 0deg;
+    border-color: blue transparent transparent transparent;
+  }
+  50% {
+    rotate: 1turn;
+    border-color: purple transparent transparent transparent;
+  }
+  100% {
+    rotate: 2turn;
+    border-color: blue transparent transparent transparent;
+  }
 }
 
 [data-pokemon-container] {

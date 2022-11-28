@@ -4,8 +4,7 @@ const pokemonTemplateContainer = document.querySelector('[data-pokemon-container
 const search = document.getElementById('search')
 const generationSelector = document.getElementById('generation')
 const regex = /\d+/g
-// Add caching instead of just clearing array in step 3
-// Maybe add lazy loading for images on scroll down
+const loading = document.getElementById('loading')
 const pokemonCache = []
 const pokemonFetchLength = []
 const pokemonSearchArray = []
@@ -38,7 +37,7 @@ search.addEventListener('blur', e => {
   }
 })
 
-// Credit to Web Dev Simplified
+// Search Bar - Credit to Web Dev Simplified
 search.addEventListener('input', e => {
   const text = e.target.value.toLowerCase()
   const oldPokemon = document.querySelectorAll('.pokemon')
@@ -104,8 +103,18 @@ async function getPokemon(num) {
   return true
 }
 
-// Begin Point
+// Beginning Point
 async function preparePokemon() {
+  await getAllPokemon()
+    const searchPokemon = document.querySelectorAll('[data-pokemon-container]')
+
+    // Hide search names
+    if (searchPokemon.length > 0) {    
+      searchPokemon.forEach(container => {
+        container.classList.add('hidden')
+      })
+    }
+
   if (checkCache()) {
     return true
   }
@@ -114,22 +123,15 @@ async function preparePokemon() {
   }
 
   try {
-    const searchPokemon = document.querySelectorAll('[data-pokemon-container]')
     const oldPokemon = document.querySelectorAll('.pokemon')
 
-    // Remove old pokemon
+    // Hide old pokemon
     if (oldPokemon.length > 0) {    
       oldPokemon.forEach(container => {
-        container.remove()
-      })
-    }
-
-    // Hide search names
-    if (searchPokemon.length > 0) {    
-      searchPokemon.forEach(container => {
         container.classList.add('hidden')
       })
     }
+
     cachePokemon()
     getPokemon(reduceNumber(generationSelector.value))
     waitForResults()
@@ -150,14 +152,15 @@ function waitForResults() {
   try {
     if (pokemonArray.length !== pokemonFetchLength[generationSelector.value - 1]) {
       flipper++
+      loading.classList.remove('hidden')
       if (flipper > 4) {
         throw `Request timed out after ${flipper} tries.`
       }
-      console.log('Loading...');
       timeout = setTimeout(waitForResults, 1000);
       return false
     } else {
       flipper = 0
+      loading.classList.add('hidden')
       sortPokemon(pokemonArray)
       displayPokemon(pokemonArray)
       clearTimeout(timeout)
@@ -169,7 +172,28 @@ function waitForResults() {
 }
 
 // Creates elements with info from pokemon objects and appends to container
-function displayPokemon(arr) {
+function displayPokemon(arr, cached = false) {
+  if (cached) {
+    let currentGeneration = document.getElementsByClassName(`generation${generationSelector.value}`)
+    let allOtherPokemon = document.getElementsByClassName('pokemon')
+
+    // Convert from HTML collection to Array
+    currentGeneration = Array.from(currentGeneration)
+    allOtherPokemon = Array.from(allOtherPokemon)
+
+    // Hide non-current generation
+    allOtherPokemon.forEach(container => {
+      container.classList.add('hidden')
+    })
+
+    // Unhide current generation
+    currentGeneration.forEach(container => {
+      container.classList.toggle('hidden')
+    })
+
+    return true
+  }
+
   arr.forEach((pokemon) => {
     const div = document.createElement('div')
     const innerDiv = document.createElement('div')
@@ -179,7 +203,7 @@ function displayPokemon(arr) {
     const imageURL = pokemon.sprites.front_default
   
     textDiv.textContent = pokemon.name[0].toUpperCase() + pokemon.name.substring(1)
-    div.classList.add('pokemon')
+    div.classList.add('pokemon', `generation${generationSelector.value}`)
     innerDiv.classList.add('pokemon-inner')
 
     image.src = imageURL
@@ -211,71 +235,26 @@ function reduceNumber(index, arr = pokemonFetchLength) {
   }
 }
 
-// Pushes into cache if pokemonArray not empty and generation is not already in cache
+// Pushes generation number into cache if generation is not already in cache, then clears pokemonArray
 function cachePokemon() {
-  const generation = checkPokemonGeneration
-  const exists = checkCacheExists
-
-  if (generation() && exists()) {
-    pokemonCache.push([checkPokemonGeneration(), pokemonArray])
-    pokemonArray = []
-  } else {
+  if (!pokemonCache.includes(generationSelector.value)) {
+    pokemonCache.push(generationSelector.value)
     pokemonArray = []
   }
-}
-
-// Check generation of first pokemon if pokemonArray not empty
-function checkPokemonGeneration(arr=pokemonArray) {
-  if (pokemonArray.length !== 0) {
-    let id = arr[0].id
-    let generation
-  
-    for (let i = 0; i < pokemonFetchLength.length; i++) {
-      if (id < reduceNumber(i)) {
-        if (i === 0) {
-          generation = 1
-          return generation
-        } else {
-          generation = i
-          return generation
-        }
-      }
-    }
-  }
-
-  return false
-}
-
-// Check if cache already in pokemonCache
-function checkCacheExists(arr=pokemonCache) {
-  // Check cache empty
-  if (pokemonCache.length === 0) {
-    return true
-  }
-  // Check cache generation numbers
-  for (let i = 0; i < arr.length; i++) {
-    const node = arr[i];
-    if (node[0] === checkPokemonGeneration()) {
-      return false
-    }
-  }
-  return true
 }
 
 // Check if cache has generation selected, if so then load
 function checkCache(arr=pokemonCache) {
-  if (arr.length !== 0) {
-    arr.forEach((generation, index) => {
-      if (generation[0] === Number(generationSelector.value)) {
-        console.log('Loading from cache');
-        displayPokemon(generation[1])
-        return true
-      }
-    })
+  if (arr.includes(generationSelector.value)) {
+    console.log('Loading from cache');
+    displayPokemon([], true)
+    return true
+  } else {
+    return false
   }
-  return false
 }
 
+// Searchbar Templating
 function clonePokemonNodes() {
   allPokemon.forEach(pokemon => {
     const template = pokemonTemplate.content.cloneNode(true).children[0]
@@ -289,5 +268,4 @@ function clonePokemonNodes() {
   })
 }
 
-getAllPokemon()
 preparePokemon()
