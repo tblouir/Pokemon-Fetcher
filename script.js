@@ -4,7 +4,7 @@ const pokemonTemplateContainer = document.querySelector('[data-pokemon-container
 const search = document.getElementById('search')
 const generationSelector = document.getElementById('generation')
 const regex = /\d+/g
-const loading = document.getElementById('loading')
+const loading = document.querySelector('.loading')
 const pokemonCache = []
 const pokemonFetchLength = []
 const pokemonSearchArray = []
@@ -152,14 +152,18 @@ function waitForResults() {
   try {
     if (pokemonArray.length !== pokemonFetchLength[generationSelector.value - 1]) {
       flipper++
+      loading.textContent = ''
       loading.classList.remove('hidden')
       if (flipper > 4) {
+        loading.textContent = 'Request timed out after 5 tries.'
+        loading.classList.remove('loading')
         throw `Request timed out after ${flipper} tries.`
       }
       timeout = setTimeout(waitForResults, 1000);
       return false
     } else {
       flipper = 0
+      loading.textContent = ''
       loading.classList.add('hidden')
       sortPokemon(pokemonArray)
       displayPokemon(pokemonArray)

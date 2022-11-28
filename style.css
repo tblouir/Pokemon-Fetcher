@@ -23,6 +23,7 @@ body {
   font-weight: bold;
   row-gap: 2rem;
   margin-top: 3rem;
+  margin-bottom: 5rem;
 }
 
 #generation {
@@ -79,10 +80,19 @@ body {
 
 .footer {
   background-color: black;
-  color: rgba(255, 255, 255, alpha);
   text-align: center;
-  overflow: hidden;
-  margin-top: 5rem;
+  padding: 0.5rem;
+  /* margin-top: 1rem; */
+}
+
+.footer a {
+  color: white;
+  text-decoration: none;
+  text-align: center;
+}
+
+.footer a:hover {
+  color: gray;
 }
 
 .search {
@@ -93,14 +103,17 @@ body {
   display: none;
 }
 
-#loading {
+#loader {
   grid-column: 2 / 3;
-  width: 5rem;
+  justify-self: center;
+}
+
+.loading {
   height: 5rem;
+  width: 5rem;
+  border-radius: 50%;
   border: 0.5rem solid;
   border-color: black transparent transparent transparent;
-  border-radius: 50%;
-  justify-self: center;
   animation: 1.5s linear 0s infinite running rotate;
 }
 
